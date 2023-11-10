@@ -95,12 +95,13 @@ docker pull sophgo/tpuc_dev:latest
 # myname1234 is just an example, you can set your own name
 docker run --privileged --name myname1234 -v $PWD:/workspace -it sophgo/tpuc_dev:latest
 ```
-当前$PWD应该是sophon-demo/sample/chatglm2
+当前$PWD应该是sophon-demo/sample/Llama2
 
 后文(模型转换过程)假定环境都在docker的/workspace目录。
 
 
 2. 下载Llama2-7B
+
 虽然Llama2模型允许商业开源，但是模型下载需要想Meta提交使用申请，因此测试模型时可以使用我们已经下载好的模型
 ```bash
 pip3 install dfss
@@ -210,7 +211,10 @@ python3 export_onnx.py
 ```shell
 ./compile --num_device 1 --mode int8
 ```
-其中num_device决定了后续所需要使用的推理芯片的数量(SOC请使用1), mode目前支持"int8"(推荐),"f16"(num_device至少为2),"int4"(后续升级mlir后可对外开放)
+其中num_device决定了后续所需要使用的推理芯片的数量(SOC请使用1), mode目前支持
+"int8"(推荐),
+"f16"(num_device至少为2),
+"int4"(后续升级mlir后可对外开放)
 
 ### 3.4 编译程序(C++版本)
 1. PCIE环境
@@ -234,7 +238,7 @@ cmake ..
 make -j
 ```
 3. 交叉编译
-首先准备一台x86机器，在lama2/Llama2-soc/CMakeLists.txt中增加
+首先准备一台x86机器，在Llama2/Llama2-soc/CMakeLists.txt中增加
 
 ```cmake
 set(CMAKE_C_COMPILER aarch64-linux-gnu-gcc)
@@ -258,7 +262,12 @@ make -j
 ## 4. 例程测试
 在编译完成后，会在build路径下生成llama2的可执行文件,将llama2可执行文件,tokenizer.model,以及对应的bmodel模型文件放在同一路径下,即可运行(例如将PCIE上编译好的文件都放在/workspace/Llama2/Llama2-pcie下)
 
+多芯
 ```shell
 ./llama2 --model==your_bmodel_name --dev_id=0,1
 ```
 
+单芯
+```shell
+./llama2 --model==your_bmodel_name
+```
